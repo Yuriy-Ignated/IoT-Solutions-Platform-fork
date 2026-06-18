@@ -29,7 +29,8 @@ class MesPlatformApiTest {
     void listsVirtualDriver() throws Exception {
         mockMvc.perform(get("/api/v1/drivers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[?(@.id=='virtual')]").exists());
+                .andExpect(jsonPath("$[?(@.id=='virtual')]").exists())
+                .andExpect(jsonPath("$[?(@.id=='snmp')]").exists());
     }
 
     @Test

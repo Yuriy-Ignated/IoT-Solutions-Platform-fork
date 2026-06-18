@@ -23,6 +23,9 @@ public class CorrelatorHitEntity {
     @Column(name = "object_path", nullable = false)
     private String objectPath;
 
+    @Column(name = "event_name")
+    private String eventName;
+
     @Column(name = "occurred_at", nullable = false)
     private Instant occurredAt;
 
@@ -48,6 +51,14 @@ public class CorrelatorHitEntity {
 
     public void setObjectPath(String objectPath) {
         this.objectPath = objectPath;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
     public Instant getOccurredAt() {

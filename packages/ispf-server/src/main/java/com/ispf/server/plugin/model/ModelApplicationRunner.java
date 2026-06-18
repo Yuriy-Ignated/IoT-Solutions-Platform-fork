@@ -97,4 +97,19 @@ public class ModelApplicationRunner {
             objectManager.persistNodeTree(path);
         });
     }
+
+    public void ensureSnmpLocalhostDevice() {
+        if (objectManager.tree().findByPath(ModelBootstrap.SNMP_LOCALHOST_PATH).isPresent()) {
+            return;
+        }
+        modelRegistry.findByName(ModelBootstrap.SNMP_AGENT_MODEL).ifPresent(model -> {
+            modelEngine.instantiateModel(
+                    model.id(),
+                    "root.platform.devices",
+                    "snmp-localhost",
+                    Map.of()
+            );
+            objectManager.persistNodeTree(ModelBootstrap.SNMP_LOCALHOST_PATH);
+        });
+    }
 }

@@ -28,7 +28,7 @@ export default function CorrelatorsPanel({ readOnly = false }: CorrelatorsPanelP
       <header className="automation-panel-head">
         <div>
           <h2>Корреляторы событий</h2>
-          <p className="hint">События → workflow / автоматизация (окно, порог, cooldown)</p>
+          <p className="hint">События → workflow (COUNT или SEQUENCE A→B)</p>
         </div>
         {!readOnly && (
           <button type="button" className="btn primary" onClick={() => setShowCreate(true)}>
@@ -43,7 +43,8 @@ export default function CorrelatorsPanel({ readOnly = false }: CorrelatorsPanelP
           <thead>
             <tr>
               <th>Имя</th>
-              <th>Событие</th>
+              <th>Паттерн</th>
+              <th>События</th>
               <th>Объект</th>
               <th>Окно</th>
               <th>Действие</th>
@@ -55,10 +56,23 @@ export default function CorrelatorsPanel({ readOnly = false }: CorrelatorsPanelP
             {(correlators.data ?? []).map((item) => (
               <tr key={item.id}>
                 <td>{item.name}</td>
-                <td>{item.eventName}</td>
+                <td><code>{item.patternType ?? "COUNT"}</code></td>
+                <td>
+                  {item.patternType === "SEQUENCE" ? (
+                    <>
+                      <code>{item.eventName}</code>
+                      <span className="hint"> → </span>
+                      <code>{item.secondEventName ?? "?"}</code>
+                    </>
+                  ) : (
+                    <code>{item.eventName}</code>
+                  )}
+                </td>
                 <td><code>{item.objectPath ?? "*"}</code></td>
                 <td>
-                  {item.minOccurrences}× / {item.windowSeconds}s
+                  {item.patternType === "SEQUENCE"
+                    ? `${item.windowSeconds}s`
+                    : `${item.minOccurrences}× / ${item.windowSeconds}s`}
                   {item.cooldownSeconds > 0 ? ` · cd ${item.cooldownSeconds}s` : ""}
                 </td>
                 <td>

@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":packages:ispf-driver-api"))
     implementation(project(":packages:ispf-driver-mqtt"))
     implementation(project(":packages:ispf-driver-modbus"))
+    implementation(project(":packages:ispf-driver-snmp"))
     implementation(project(":packages:ispf-driver-virtual"))
     implementation(project(":packages:ispf-plugin-model"))
     implementation(project(":packages:ispf-plugin-workflow"))

@@ -80,7 +80,9 @@ public class ObjectManager {
         } else {
             seedPlatformStructure();
         }
+        modelBootstrap.getObject().ensureBuiltInModels();
         modelApplicationRunner.getObject().applyDemoModels();
+        modelApplicationRunner.getObject().ensureSnmpLocalhostDevice();
         initialized = true;
     }
 
@@ -189,7 +191,6 @@ public class ObjectManager {
 
     private void seedPlatformStructure() {
         platformBootstrap.initialize(objectTree);
-        modelBootstrap.getObject().seedModels();
         persistAll();
     }
 

@@ -11,6 +11,7 @@ include(
     "packages:ispf-server",
     "packages:ispf-driver-mqtt",
     "packages:ispf-driver-modbus",
+    "packages:ispf-driver-snmp",
     "packages:ispf-driver-virtual",
     "packages:ispf-plugin-model",
     "packages:ispf-plugin-workflow",

@@ -27,6 +27,7 @@ iot-solutions-platform-framework/
 │   ├── ispf-driver-api/     # SPI для драйверов устройств
 │   ├── ispf-driver-mqtt/    # MQTT-драйвер (Eclipse Paho)
 │   ├── ispf-driver-modbus/  # Modbus TCP-драйвер (j2mod)
+│   ├── ispf-driver-snmp/    # SNMP v1/v2c (SNMP4J)
 │   ├── ispf-plugin-model/   # Models plugin — шаблоны объектов
 │   └── ispf-server/         # Spring Boot API-сервер
 ├── apps/
@@ -144,6 +145,7 @@ Keycloak (docker compose, порт 8180): создайте realm `ispf`, кли�
 - [x] Персистентность объектов (JPA ↔ PostgreSQL/H2)
 - [x] WebSocket live-updates переменных и событий
 - [x] Драйвер Modbus TCP (`ispf-driver-modbus`)
+- [x] Драйвер SNMP v1/v2c (`ispf-driver-snmp`)
 - [x] Dashboard builder (low-code HMI) — drag-and-drop, графики/тренды
 - [x] BPMN visual editor (bpmn-js) в Workflow Builder
 - [x] Driver runtime + virtual simulator (стенд без железа)
@@ -158,10 +160,11 @@ Keycloak (docker compose, порт 8180): создайте realm `ispf`, кли�
 - [x] Admin UI: вкладка «Автоматизация» (alert rules + correlators)
 - [x] RBAC: роли admin/operator (Keycloak + local header)
 - [x] Admin UI: формы создания alert rules и correlators
-- [ ] Драйверы: OPC UA, SNMP
+- [x] Драйвер SNMP (v1/v2c GET/SET через SNMP4J)
+- [ ] Драйверы: OPC UA
 - [ ] Edge Agent (Rust) с offline-sync
 - [x] Workflow engine (BPMN / NATS) — MVP + user tasks
-- [ ] Correlators: multi-event patterns (в планах — расширенные паттерны)
+- [x] Correlators: multi-event patterns (COUNT + SEQUENCE A→B)
 - [ ] Module marketplace
 - [ ] Kubernetes Helm chart
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { createCorrelator } from "../../api";
-import type { CreateCorrelatorPayload } from "../../types/automation";
+import type { CreateCorrelatorPayload, CorrelatorPatternType } from "../../types/automation";
 
 interface CreateCorrelatorDialogProps {
   onClose: () => void;
@@ -11,7 +11,9 @@ interface CreateCorrelatorDialogProps {
 const DEFAULT: CreateCorrelatorPayload = {
   name: "",
   objectPath: "root.platform.devices.demo-sensor-01",
+  patternType: "COUNT",
   eventName: "thresholdExceeded",
+  secondEventName: "",
   windowSeconds: 0,
   minOccurrences: 1,
   cooldownSeconds: 120,
@@ -22,12 +24,14 @@ const DEFAULT: CreateCorrelatorPayload = {
 
 export default function CreateCorrelatorDialog({ onClose, onCreated }: CreateCorrelatorDialogProps) {
   const [form, setForm] = useState<CreateCorrelatorPayload>({ ...DEFAULT });
+  const isSequence = form.patternType === "SEQUENCE";
 
   const mutation = useMutation({
     mutationFn: () =>
       createCorrelator({
         ...form,
         objectPath: form.objectPath?.trim() || undefined,
+        secondEventName: isSequence ? form.secondEventName?.trim() || undefined : undefined,
       }),
     onSuccess: () => onCreated(),
   });
@@ -55,13 +59,40 @@ export default function CreateCorrelatorDialog({ onClose, onCreated }: CreateCor
             />
           </label>
           <label>
-            Событие *
+            Паттерн
+            <select
+              value={form.patternType ?? "COUNT"}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  patternType: e.target.value as CorrelatorPatternType,
+                  windowSeconds: e.target.value === "SEQUENCE" && f.windowSeconds <= 0 ? 300 : f.windowSeconds,
+                }))
+              }
+            >
+              <option value="COUNT">COUNT — одно событие (N раз за окно)</option>
+              <option value="SEQUENCE">SEQUENCE — A → B за окно</option>
+            </select>
+          </label>
+          <label>
+            {isSequence ? "Событие A *" : "Событие *"}
             <input
               value={form.eventName}
               onChange={(e) => setForm((f) => ({ ...f, eventName: e.target.value }))}
               required
             />
           </label>
+          {isSequence && (
+            <label>
+              Событие B *
+              <input
+                value={form.secondEventName ?? ""}
+                onChange={(e) => setForm((f) => ({ ...f, secondEventName: e.target.value }))}
+                required
+                placeholder="alarmActive"
+              />
+            </label>
+          )}
           <label className="full">
             Путь объекта
             <input
@@ -74,20 +105,22 @@ export default function CreateCorrelatorDialog({ onClose, onCreated }: CreateCor
             Окно (сек)
             <input
               type="number"
-              min={0}
+              min={isSequence ? 1 : 0}
               value={form.windowSeconds}
               onChange={(e) => setForm((f) => ({ ...f, windowSeconds: Number(e.target.value) }))}
             />
           </label>
-          <label>
-            Мин. повторений
-            <input
-              type="number"
-              min={1}
-              value={form.minOccurrences}
-              onChange={(e) => setForm((f) => ({ ...f, minOccurrences: Number(e.target.value) }))}
-            />
-          </label>
+          {!isSequence && (
+            <label>
+              Мин. повторений
+              <input
+                type="number"
+                min={1}
+                value={form.minOccurrences}
+                onChange={(e) => setForm((f) => ({ ...f, minOccurrences: Number(e.target.value) }))}
+              />
+            </label>
+          )}
           <label>
             Cooldown (сек)
             <input

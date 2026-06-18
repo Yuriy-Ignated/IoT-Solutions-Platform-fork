@@ -10,6 +10,7 @@ import com.ispf.core.model.FieldType;
 import com.ispf.plugin.model.ModelBindingDefinition;
 import com.ispf.plugin.model.ModelDefinition;
 import com.ispf.plugin.model.ModelEngine;
+import com.ispf.plugin.model.ModelRegistry;
 import com.ispf.plugin.model.ModelType;
 import com.ispf.plugin.model.ModelVariableDefinition;
 import com.ispf.server.dashboard.DashboardLayouts;
@@ -62,13 +63,49 @@ public class ModelBootstrap {
     private static final String VIRTUAL_DRIVER_CONFIG =
             "{\"baseTemperature\":\"22.0\",\"amplitude\":\"15.0\",\"periodSec\":\"60\"}";
 
-    private final ModelEngine modelEngine;
+    public static final String SNMP_AGENT_MODEL = "snmp-agent-v1";
+    public static final String SNMP_LOCALHOST_PATH = "root.platform.devices.snmp-localhost";
 
-    public ModelBootstrap(ModelEngine modelEngine) {
+    private static final String SNMP_DRIVER_CONFIG =
+            "{\"host\":\"127.0.0.1\",\"port\":\"161\",\"community\":\"public\",\"version\":\"2c\",\"timeoutMs\":\"3000\",\"retries\":\"1\"}";
+
+    private static final String SNMP_POINT_MAPPINGS =
+            "{\"sysName\":\"1.3.6.1.2.1.1.5.0:STRING\",\"sysDescr\":\"1.3.6.1.2.1.1.1.0:STRING\","
+                    + "\"sysUpTime\":\"1.3.6.1.2.1.1.3.0\",\"sysLocation\":\"1.3.6.1.2.1.1.6.0:STRING\"}";
+
+    private static final DataSchema SNMP_NUMERIC_SCHEMA = DataSchema.builder("snmpNumeric")
+            .field("value", FieldType.DOUBLE)
+            .field("raw", FieldType.STRING)
+            .field("type", FieldType.STRING)
+            .build();
+
+    private static final DataSchema SNMP_STRING_SCHEMA = DataSchema.builder("snmpString")
+            .field("value", FieldType.STRING)
+            .field("raw", FieldType.STRING)
+            .field("type", FieldType.STRING)
+            .build();
+
+    private final ModelEngine modelEngine;
+    private final ModelRegistry modelRegistry;
+
+    public ModelBootstrap(ModelEngine modelEngine, ModelRegistry modelRegistry) {
         this.modelEngine = modelEngine;
+        this.modelRegistry = modelRegistry;
     }
 
+    /**
+     * Registers built-in models on every startup (in-memory registry is empty after restart).
+     */
+    public void ensureBuiltInModels() {
+        seedModels();
+    }
+
+    /** @deprecated use {@link #ensureBuiltInModels()} */
+    @Deprecated
     public void seedModels() {
+        if (!modelRegistry.findByName("mqtt-sensor-v1").isEmpty()) {
+            return;
+        }
         ModelDefinition mqttSensor = new ModelDefinition(
                 UUID.randomUUID().toString(),
                 "mqtt-sensor-v1",
@@ -203,6 +240,8 @@ public class ModelBootstrap {
         );
 
         modelEngine.createModel(mqttSensor);
+
+        modelEngine.createModel(buildSnmpAgentModel());
 
         ModelDefinition dashboard = new ModelDefinition(
                 UUID.randomUUID().toString(),
@@ -341,6 +380,125 @@ public class ModelBootstrap {
         );
 
         modelEngine.createModel(workflow);
+    }
+
+    static ModelDefinition buildSnmpAgentModel() {
+        return new ModelDefinition(
+                UUID.randomUUID().toString(),
+                SNMP_AGENT_MODEL,
+                "SNMP agent device (MIB-II system group)",
+                ModelType.INSTANCE,
+                ObjectType.DEVICE,
+                "",
+                List.of(
+                        new ModelVariableDefinition(
+                                "status",
+                                "Device connectivity status",
+                                "status",
+                                STATUS_SCHEMA,
+                                true,
+                                false,
+                                null,
+                                DataRecord.single(STATUS_SCHEMA, Map.of("online", false, "lastSeen", ""))
+                        ),
+                        new ModelVariableDefinition(
+                                "sysName",
+                                "SNMP sysName (1.3.6.1.2.1.1.5.0)",
+                                "telemetry",
+                                SNMP_STRING_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(SNMP_STRING_SCHEMA, Map.of("value", "", "raw", "", "type", ""))
+                        ),
+                        new ModelVariableDefinition(
+                                "sysDescr",
+                                "SNMP sysDescr (1.3.6.1.2.1.1.1.0)",
+                                "telemetry",
+                                SNMP_STRING_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(SNMP_STRING_SCHEMA, Map.of("value", "", "raw", "", "type", ""))
+                        ),
+                        new ModelVariableDefinition(
+                                "sysUpTime",
+                                "SNMP sysUpTime (1.3.6.1.2.1.1.3.0)",
+                                "telemetry",
+                                SNMP_NUMERIC_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(SNMP_NUMERIC_SCHEMA, Map.of("value", 0.0, "raw", "", "type", ""))
+                        ),
+                        new ModelVariableDefinition(
+                                "sysLocation",
+                                "SNMP sysLocation (1.3.6.1.2.1.1.6.0)",
+                                "telemetry",
+                                SNMP_STRING_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(SNMP_STRING_SCHEMA, Map.of("value", "", "raw", "", "type", ""))
+                        ),
+                        new ModelVariableDefinition(
+                                "driverId",
+                                "Attached driver plugin id",
+                                "driver",
+                                STRING_VALUE_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(STRING_VALUE_SCHEMA, Map.of("value", "snmp"))
+                        ),
+                        new ModelVariableDefinition(
+                                "driverStatus",
+                                "Driver runtime status",
+                                "driver",
+                                STRING_VALUE_SCHEMA,
+                                true,
+                                false,
+                                null,
+                                DataRecord.single(STRING_VALUE_SCHEMA, Map.of("value", "STOPPED"))
+                        ),
+                        new ModelVariableDefinition(
+                                "driverPollIntervalMs",
+                                "Driver polling interval",
+                                "driver",
+                                INTEGER_VALUE_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(INTEGER_VALUE_SCHEMA, Map.of("value", 5000))
+                        ),
+                        new ModelVariableDefinition(
+                                "driverConfigJson",
+                                "Driver configuration JSON",
+                                "driver",
+                                STRING_VALUE_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(STRING_VALUE_SCHEMA, Map.of("value", SNMP_DRIVER_CONFIG))
+                        ),
+                        new ModelVariableDefinition(
+                                "driverPointMappingsJson",
+                                "Driver point mappings JSON",
+                                "driver",
+                                STRING_VALUE_SCHEMA,
+                                true,
+                                true,
+                                null,
+                                DataRecord.single(STRING_VALUE_SCHEMA, Map.of("value", SNMP_POINT_MAPPINGS))
+                        )
+                ),
+                List.of(),
+                List.of(),
+                List.of(),
+                Map.of(),
+                Instant.now(),
+                Instant.now()
+        );
     }
 
     public ModelEngine modelEngine() {

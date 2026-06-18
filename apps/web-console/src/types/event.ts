@@ -1,4 +1,4 @@
-import type { CorrelatorActionType } from "./automation";
+import type { CorrelatorActionType, CorrelatorPatternType } from "./automation";
 
 export type EventLevel = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
 
@@ -33,7 +33,9 @@ export interface EventCorrelator {
   id: string;
   name: string;
   objectPath: string | null;
+  patternType: CorrelatorPatternType;
   eventName: string;
+  secondEventName: string | null;
   windowSeconds: number;
   minOccurrences: number;
   cooldownSeconds: number;

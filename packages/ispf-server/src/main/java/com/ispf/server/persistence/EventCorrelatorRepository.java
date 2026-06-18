@@ -9,5 +9,7 @@ public interface EventCorrelatorRepository extends JpaRepository<EventCorrelator
 
     List<EventCorrelatorEntity> findByEventNameAndEnabledTrue(String eventName);
 
+    List<EventCorrelatorEntity> findBySecondEventNameAndEnabledTrue(String secondEventName);
+
     long count();
 }

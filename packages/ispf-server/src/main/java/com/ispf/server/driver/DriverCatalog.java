@@ -3,6 +3,7 @@ package com.ispf.server.driver;
 import com.ispf.driver.DriverMetadata;
 import com.ispf.driver.mqtt.MqttDeviceDriver;
 import com.ispf.driver.modbus.ModbusTcpDeviceDriver;
+import com.ispf.driver.snmp.SnmpDeviceDriver;
 import com.ispf.driver.virtual.VirtualDeviceDriver;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,8 @@ public class DriverCatalog {
     private final List<DriverMetadata> drivers = List.of(
             new VirtualDeviceDriver().metadata(),
             new MqttDeviceDriver().metadata(),
-            new ModbusTcpDeviceDriver().metadata()
+            new ModbusTcpDeviceDriver().metadata(),
+            new SnmpDeviceDriver().metadata()
     );
 
     public List<DriverMetadata> list() {

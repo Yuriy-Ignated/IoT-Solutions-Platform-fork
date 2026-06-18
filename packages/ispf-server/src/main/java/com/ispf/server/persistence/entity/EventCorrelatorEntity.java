@@ -1,5 +1,6 @@
 package com.ispf.server.persistence.entity;
 
+import com.ispf.server.correlator.CorrelatorPatternType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,6 +23,12 @@ public class EventCorrelatorEntity {
 
     @Column(name = "event_name", nullable = false)
     private String eventName;
+
+    @Column(name = "pattern_type", nullable = false)
+    private String patternType = CorrelatorPatternType.COUNT.name();
+
+    @Column(name = "second_event_name")
+    private String secondEventName;
 
     @Column(name = "window_seconds", nullable = false)
     private int windowSeconds;
@@ -80,6 +87,22 @@ public class EventCorrelatorEntity {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    public String getPatternType() {
+        return patternType;
+    }
+
+    public void setPatternType(String patternType) {
+        this.patternType = patternType;
+    }
+
+    public String getSecondEventName() {
+        return secondEventName;
+    }
+
+    public void setSecondEventName(String secondEventName) {
+        this.secondEventName = secondEventName;
     }
 
     public int getWindowSeconds() {
