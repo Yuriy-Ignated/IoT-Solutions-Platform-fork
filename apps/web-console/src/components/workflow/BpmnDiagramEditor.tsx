@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 import ispfModdle from "../../bpmn/ispf-moddle.json";
 import { EMPTY_BPMN } from "../../bpmn/constants";
+import { ensureBpmnDiagram } from "../../bpmn/ensureDiagram";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
@@ -71,10 +72,11 @@ export default function BpmnDiagramEditor({ xml, onChange }: BpmnDiagramEditorPr
     }
 
     let cancelled = false;
-    const content = xml.trim() || EMPTY_BPMN;
+    const raw = xml.trim() || EMPTY_BPMN;
 
     void (async () => {
       try {
+        const content = await ensureBpmnDiagram(raw);
         await modeler.importXML(content);
         if (cancelled) return;
         setImportError(null);

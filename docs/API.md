@@ -65,6 +65,25 @@ Content-Type: application/json
 | PUT | `/api/v1/workflows/by-path/bpmn` | admin | Сохранить BPMN XML |
 | PUT | `/api/v1/workflows/by-path/status` | admin | `DRAFT` / `ACTIVE` / `STOPPED` |
 | POST | `/api/v1/workflows/by-path/run` | admin | Запуск экземпляра |
+| POST | `/api/v1/workflows/instances/{instanceId}/cancel` | operator+ | Отмена экземпляра |
+
+## Приложения (REQ-PF)
+
+Платформенный слой для deploy прикладных решений без Java в `ispf-server`.  
+Полное описание: [APPLICATIONS.md](APPLICATIONS.md).
+
+| Method | Path | Роли | Описание |
+|--------|------|------|----------|
+| POST | `/api/v1/applications` | admin | Регистрация приложения |
+| POST | `/api/v1/applications/{appId}/deploy` | admin | Bundle deploy (миграции + функции + schedules) |
+| POST | `/api/v1/applications/{appId}/data/migrate` | admin | SQL-миграции приложения |
+| GET | `/api/v1/applications/{appId}/data/status` | admin | Статус миграций |
+| POST | `/api/v1/applications/{appId}/functions/deploy` | admin | Deploy script-функции |
+| POST | `/api/v1/bff/invoke` | operator+ | Универсальный BFF-шлюз к функциям |
+| GET | `/api/v1/schedules` | admin | Список расписаний |
+| POST | `/api/v1/schedules` | admin | Создать/обновить расписание |
+
+Пример bundle: [`examples/terminal-app/`](../examples/terminal-app/).
 
 ## Work Queue
 

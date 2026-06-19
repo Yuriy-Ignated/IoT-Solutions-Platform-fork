@@ -3,5 +3,6 @@ package com.ispf.plugin.workflow;
 public enum WorkflowActionType {
     LOG,
     SET_VARIABLE,
-    PUBLISH_NATS
+    PUBLISH_NATS,
+    INVOKE_FUNCTION
 }

@@ -10,6 +10,7 @@
 | [Архитектура](ARCHITECTURE.md) | Видение, слои, расширяемость |
 | [Модель объектов](OBJECT_MODEL.md) | Дерево, переменные, события, функции, CEL |
 | [REST API](API.md) | Полный справочник endpoints |
+| [Приложения (REQ-PF)](APPLICATIONS.md) | Deploy функций, миграций, bundle, BFF, scheduler |
 | [WebSocket](API.md#websocket) | Live-обновления объектов |
 | [Модели (Models)](MODELS.md) | Шаблоны объектов, типы, встроенные модели |
 | [Драйверы](DRIVERS.md) | MQTT, Modbus, SNMP, Virtual — SPI и runtime |

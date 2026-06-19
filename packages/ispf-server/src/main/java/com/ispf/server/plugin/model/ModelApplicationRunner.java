@@ -5,6 +5,7 @@ import com.ispf.core.model.DataRecord;
 import com.ispf.core.model.DataSchema;
 import com.ispf.core.model.FieldType;
 import com.ispf.server.object.ObjectManager;
+import com.ispf.core.object.ObjectType;
 import com.ispf.server.dashboard.DashboardLayouts;
 import com.ispf.plugin.workflow.WorkflowLifecycleStatus;
 import com.ispf.server.workflow.WorkflowDefinitions;
@@ -35,6 +36,7 @@ public class ModelApplicationRunner {
     }
 
     public void applyDemoModels() {
+        ensurePlatformDemoNodes();
         modelRegistry.findByName("mqtt-sensor-v1").ifPresent(model -> {
             String path = "root.platform.devices.demo-sensor-01";
             modelEngine.applyModel(model.id(), path);
@@ -96,6 +98,29 @@ public class ModelApplicationRunner {
             );
             objectManager.persistNodeTree(path);
         });
+    }
+
+    private void ensurePlatformDemoNodes() {
+        ensureNode("root.platform.devices", ObjectType.CUSTOM, "Devices", "Connected devices");
+        ensureNode("root.platform.devices.demo-sensor-01", ObjectType.DEVICE, "Demo Sensor 01", "Simulated MQTT temperature sensor", "mqtt-sensor-v1");
+        ensureNode("root.platform.dashboards", ObjectType.CUSTOM, "Dashboards", "HMI dashboards");
+        ensureNode("root.platform.dashboards.demo-sensor", ObjectType.DASHBOARD, "Demo Sensor Dashboard", "Live HMI for demo MQTT temperature sensor", "dashboard-v1");
+        ensureNode("root.platform.workflows", ObjectType.CUSTOM, "Workflows", "BPMN automation workflows");
+        ensureNode("root.platform.workflows.demo-alarm-handler", ObjectType.WORKFLOW, "Demo Alarm Handler", "Triggers when demo sensor alarm becomes active", "workflow-v1");
+    }
+
+    private void ensureNode(String path, ObjectType type, String displayName, String description) {
+        ensureNode(path, type, displayName, description, null);
+    }
+
+    private void ensureNode(String path, ObjectType type, String displayName, String description, String modelId) {
+        if (objectManager.tree().findByPath(path).isPresent()) {
+            return;
+        }
+        int lastDot = path.lastIndexOf('.');
+        String parentPath = path.substring(0, lastDot);
+        String name = path.substring(lastDot + 1);
+        objectManager.create(parentPath, name, type, displayName, description, modelId);
     }
 
     public void ensureSnmpLocalhostDevice() {

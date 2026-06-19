@@ -1,0 +1,37 @@
+{
+  "steps": [
+    {
+      "type": "selectOne",
+      "var": "order",
+      "sql": "SELECT id, status FROM dispatch_order WHERE id = ?",
+      "params": ["${input.orderId}"]
+    },
+    {
+      "type": "failIfNull",
+      "var": "order",
+      "error_code": "NOT_FOUND",
+      "error_message": "Order not found"
+    },
+    {
+      "type": "failIfNotEquals",
+      "var": "order.status",
+      "equals": "ready",
+      "error_code": "INVALID_STATE",
+      "error_message": "Order must be ready"
+    },
+    {
+      "type": "exec",
+      "sql": "UPDATE dispatch_order SET status = 'filling', updated_at = NOW() WHERE id = ?",
+      "params": ["${input.orderId}"]
+    },
+    {
+      "type": "return",
+      "fields": {
+        "error_code": "OK",
+        "error_message": "",
+        "orderId": "${input.orderId}",
+        "status": "filling"
+      }
+    }
+  ]
+}

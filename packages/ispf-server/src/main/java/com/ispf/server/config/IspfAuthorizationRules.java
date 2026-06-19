@@ -28,10 +28,19 @@ public final class IspfAuthorizationRules {
         auth.requestMatchers(HttpMethod.POST, "/api/v1/objects/by-path/functions/invoke")
                 .hasAnyRole(IspfRoles.OPERATOR, IspfRoles.ADMIN);
 
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/bff/**")
+                .hasAnyRole(IspfRoles.OPERATOR, IspfRoles.ADMIN);
+
         auth.requestMatchers(HttpMethod.GET, "/api/v1/**")
                 .hasAnyRole(IspfRoles.OPERATOR, IspfRoles.ADMIN);
 
         auth.requestMatchers(HttpMethod.POST, "/api/v1/events/**")
+                .hasAnyRole(IspfRoles.OPERATOR, IspfRoles.ADMIN);
+
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/workflows/by-path/run")
+                .hasAnyRole(IspfRoles.OPERATOR, IspfRoles.ADMIN);
+
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/workflows/instances/*/cancel")
                 .hasAnyRole(IspfRoles.OPERATOR, IspfRoles.ADMIN);
 
         auth.requestMatchers("/api/v1/**").hasRole(IspfRoles.ADMIN);

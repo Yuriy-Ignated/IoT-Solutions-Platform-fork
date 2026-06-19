@@ -45,15 +45,18 @@ public class ModelController {
     private final ModelRegistry modelRegistry;
     private final ModelEngine modelEngine;
     private final ObjectManager objectManager;
+    private final ModelPersistenceService modelPersistence;
 
     public ModelController(
             ModelRegistry modelRegistry,
             ModelEngine modelEngine,
-            ObjectManager objectManager
+            ObjectManager objectManager,
+            ModelPersistenceService modelPersistence
     ) {
         this.modelRegistry = modelRegistry;
         this.modelEngine = modelEngine;
         this.objectManager = objectManager;
+        this.modelPersistence = modelPersistence;
     }
 
     @GetMapping
@@ -92,7 +95,9 @@ public class ModelController {
                 now
         );
         try {
-            return ModelDto.from(modelEngine.createModel(model), modelEngine.modelsRoot());
+            ModelDefinition created = modelEngine.createModel(model);
+            modelPersistence.persist(created, false);
+            return ModelDto.from(created, modelEngine.modelsRoot());
         } catch (ModelException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
@@ -116,12 +121,15 @@ public class ModelController {
                 existing.createdAt(),
                 Instant.now()
         );
-        return ModelDto.from(modelEngine.updateModel(updated), modelEngine.modelsRoot());
+        ModelDefinition saved = modelEngine.updateModel(updated);
+        modelPersistence.persist(saved, false);
+        return ModelDto.from(saved, modelEngine.modelsRoot());
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id) {
         modelEngine.deleteModel(id);
+        modelPersistence.delete(id);
     }
 
     @PostMapping("/{id}/apply")

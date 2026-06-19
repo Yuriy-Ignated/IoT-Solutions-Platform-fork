@@ -52,6 +52,7 @@ JUnit 5, Java 21.
 | `EventCorrelatorApiTest` | Correlators CRUD |
 | `ModelControllerTest` | Models API |
 | `OperatorAccessTest` | RBAC operator vs admin |
+| `ApplicationPlatformApiTest` | REQ-PF: applications, bundle deploy, BFF invoke |
 
 ### Сценарии demo-стенда
 

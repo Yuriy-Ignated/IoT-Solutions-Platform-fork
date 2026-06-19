@@ -299,6 +299,60 @@ public class WorkflowService {
                     params.getOrDefault("subject", "ispf.workflow.event"),
                     params.getOrDefault("message", task.name())
             );
+            case INVOKE_FUNCTION -> invokeWorkflowFunction(params, instance);
+        }
+    }
+
+    private void invokeWorkflowFunction(Map<String, String> params, WorkflowInstance instance) throws WorkflowException {
+        String objectPath = required(params, "objectPath");
+        String functionName = required(params, "functionName");
+        String inputMap = params.getOrDefault("inputMap", "");
+        DataRecord input = buildWorkflowFunctionInput(inputMap, instance);
+        DataRecord output = functionService.invoke(objectPath, functionName, input);
+        applyWorkflowFunctionOutput(params.get("outputMap"), output, instance);
+        if (output != null && output.rowCount() > 0) {
+            Object errorCode = output.firstRow().get("error_code");
+            if (errorCode != null && !"OK".equals(String.valueOf(errorCode))) {
+                throw new WorkflowException("Function " + functionName + " failed: " + errorCode);
+            }
+        }
+    }
+
+    private DataRecord buildWorkflowFunctionInput(String inputMap, WorkflowInstance instance) {
+        if (inputMap == null || inputMap.isBlank()) {
+            return null;
+        }
+        Map<String, Object> row = new HashMap<>();
+        DataSchema.Builder schemaBuilder = DataSchema.builder("workflowFunctionInput");
+        for (String part : inputMap.split(",")) {
+            String[] kv = part.split("=", 2);
+            if (kv.length != 2) {
+                continue;
+            }
+            String key = kv[0].trim();
+            String valueExpr = kv[1].trim();
+            String value = valueExpr.startsWith("${") && valueExpr.endsWith("}")
+                    ? instance.variables().getOrDefault(valueExpr.substring(2, valueExpr.length() - 1), "")
+                    : valueExpr;
+            row.put(key, value);
+            schemaBuilder.field(key, FieldType.STRING);
+        }
+        return row.isEmpty() ? null : DataRecord.single(schemaBuilder.build(), row);
+    }
+
+    private void applyWorkflowFunctionOutput(String outputMap, DataRecord output, WorkflowInstance instance) {
+        if (outputMap == null || outputMap.isBlank() || output == null || output.rowCount() == 0) {
+            return;
+        }
+        Map<String, Object> resultRow = output.firstRow();
+        for (String part : outputMap.split(",")) {
+            String[] kv = part.split("=", 2);
+            if (kv.length != 2) {
+                continue;
+            }
+            String workflowVar = kv[0].trim();
+            String resultField = kv[1].trim();
+            instance.setVariable(workflowVar, String.valueOf(resultRow.get(resultField)));
         }
     }
 

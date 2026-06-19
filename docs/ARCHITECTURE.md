@@ -62,6 +62,7 @@ self.temperature.value > self.threshold.value
 │  ObjectManager │ EventService │ WorkflowService         │
 │  DashboardService │ AlertRuleService │ CorrelatorService│
 │  DriverRuntimeService │ ModelEngine                     │
+│  ApplicationPlatform (functions, data, BFF, scheduler)  │
 ├─────────────────────────────────────────────────────────┤
 │  Plugins & Libraries                                    │
 │  ispf-core │ ispf-expression │ ispf-plugin-model         │
@@ -132,6 +133,7 @@ Event fire → event_history
 4. **Dashboard widgets** — новые типы в web-console ([DASHBOARDS.md](DASHBOARDS.md))
 5. **REST / Webhook** — внешние интеграции ([API.md](API.md))
 6. **NATS subjects** — messageTask в BPMN ([WORKFLOWS.md](WORKFLOWS.md))
+7. **Application bundle** — deploy функций, миграций, schedules без Java в server ([APPLICATIONS.md](APPLICATIONS.md))
 
 ## Reference Stands
 

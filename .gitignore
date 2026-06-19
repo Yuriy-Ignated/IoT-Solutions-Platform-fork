@@ -24,7 +24,7 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Logs & data
+# Logs & runtime data (repo root only)
 logs/
-data/
+/data/
 *.log

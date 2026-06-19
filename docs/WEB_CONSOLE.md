@@ -63,7 +63,8 @@ src/
 │   └── useTrendSeries.ts
 ├── bpmn/
 │   ├── ispf-moddle.json    # ISPF BPMN extensions
-│   └── constants.ts
+│   ├── constants.ts        # EMPTY_BPMN (с минимальным bpmndi)
+│   └── ensureDiagram.ts    # auto-layout при отсутствии DI
 └── components/
     ├── ObjectTree.tsx
     ├── ExplorerView.tsx
@@ -89,6 +90,7 @@ src/
 - Переключение DRAFT/ACTIVE/STOPPED
 - Кнопка Run
 - BPMN editor (bpmn-js) с ISPF moddle
+- **Auto-layout:** если XML без `bpmndi`, `ensureDiagram.ts` вызывает `bpmn-auto-layout` перед отображением (см. [WORKFLOWS.md](WORKFLOWS.md#диаграмма-без-разметки-di))
 - Fallback XML viewer
 
 См. [WORKFLOWS.md](WORKFLOWS.md).
@@ -116,6 +118,7 @@ npm run build    # production dist/
 | @tanstack/react-query | Server state |
 | recharts | chart, sparkline |
 | bpmn-js | BPMN editor/viewer |
+| bpmn-auto-layout | Генерация DI для BPMN без графической разметки |
 
 ## Кастомизация
 

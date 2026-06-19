@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BpmnViewer from "bpmn-js/lib/NavigatedViewer";
 import ispfModdle from "../../bpmn/ispf-moddle.json";
 import { EMPTY_BPMN } from "../../bpmn/constants";
+import { ensureBpmnDiagram } from "../../bpmn/ensureDiagram";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
@@ -26,8 +27,9 @@ export default function BpmnDiagramViewer({ xml }: BpmnDiagramViewerProps) {
     let disposed = false;
 
     const load = async () => {
-      const content = xml.trim() || EMPTY_BPMN;
+      const raw = xml.trim() || EMPTY_BPMN;
       try {
+        const content = await ensureBpmnDiagram(raw);
         await viewer.importXML(content);
         if (disposed) return;
         setImportError(null);

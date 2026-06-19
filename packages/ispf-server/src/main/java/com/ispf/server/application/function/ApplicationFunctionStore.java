@@ -1,0 +1,95 @@
+package com.ispf.server.application.function;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class ApplicationFunctionStore {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public ApplicationFunctionStore(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public void deploy(ApplicationFunctionHandler.DeployedFunction function) {
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*) FROM application_functions
+                WHERE app_id = ? AND object_path = ? AND function_name = ? AND version = ?
+                """,
+                Integer.class,
+                function.appId(),
+                function.objectPath(),
+                function.functionName(),
+                function.version()
+        );
+        if (count != null && count > 0) {
+            jdbcTemplate.update("""
+                    UPDATE application_functions
+                    SET source_type = ?, source_body = ?, input_schema_json = ?,
+                        output_schema_json = ?, deployed_at = ?
+                    WHERE app_id = ? AND object_path = ? AND function_name = ? AND version = ?
+                    """,
+                    function.sourceType(),
+                    function.sourceBody(),
+                    function.inputSchemaJson(),
+                    function.outputSchemaJson(),
+                    Timestamp.from(Instant.now()),
+                    function.appId(),
+                    function.objectPath(),
+                    function.functionName(),
+                    function.version()
+            );
+            return;
+        }
+        jdbcTemplate.update("""
+                INSERT INTO application_functions (
+                    id, app_id, object_path, function_name, version,
+                    source_type, source_body, input_schema_json, output_schema_json, deployed_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                function.id(),
+                function.appId(),
+                function.objectPath(),
+                function.functionName(),
+                function.version(),
+                function.sourceType(),
+                function.sourceBody(),
+                function.inputSchemaJson(),
+                function.outputSchemaJson(),
+                Timestamp.from(Instant.now())
+        );
+    }
+
+    public Optional<ApplicationFunctionHandler.DeployedFunction> findLatest(String objectPath, String functionName) {
+        List<ApplicationFunctionHandler.DeployedFunction> rows = jdbcTemplate.query("""
+                SELECT id, app_id, object_path, function_name, version,
+                       source_type, source_body, input_schema_json, output_schema_json
+                FROM application_functions
+                WHERE object_path = ? AND function_name = ?
+                ORDER BY deployed_at DESC
+                LIMIT 1
+                """,
+                (rs, rowNum) -> new ApplicationFunctionHandler.DeployedFunction(
+                        UUID.fromString(rs.getString("id")),
+                        rs.getString("app_id"),
+                        rs.getString("object_path"),
+                        rs.getString("function_name"),
+                        rs.getString("version"),
+                        rs.getString("source_type"),
+                        rs.getString("source_body"),
+                        rs.getString("input_schema_json"),
+                        rs.getString("output_schema_json")
+                ),
+                objectPath,
+                functionName
+        );
+        return rows.isEmpty() ? Optional.empty() : Optional.of(rows.get(0));
+    }
+}

@@ -27,6 +27,9 @@
 | `ModelRegistry` | In-memory каталог моделей |
 | `ModelEngine` | CRUD, apply, instantiate, fromObject |
 | `ModelBootstrap` | Built-in models при старте |
+| `ModelPersistenceService` | Сохранение пользовательских моделей в `model_definitions` (REQ-PF-07) |
+
+Пользовательские модели (не `builtin`) восстанавливаются из БД при старте сервера после `ensureBuiltInModels()`.
 
 ## API
 

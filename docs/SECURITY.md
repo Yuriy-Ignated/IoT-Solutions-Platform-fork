@@ -54,8 +54,12 @@ Web Console: селектор роли в шапке.
 | `GET /api/v1/**` | ✓ | ✓ | |
 | `POST /api/v1/events/**` | ✓ | ✓ | |
 | `POST .../functions/invoke` | ✓ | ✓ | |
+| `POST /api/v1/bff/**` | ✓ | ✓ | |
+| `POST /api/v1/workflows/instances/*/cancel` | ✓ | ✓ | |
 | `GET/POST /api/v1/work-queue/**` | ✓ | ✓ | |
 | `POST/PUT/PATCH/DELETE /api/v1/**` | ✓ | | |
+| `/api/v1/applications/**` | ✓ | | |
+| `/api/v1/schedules/**` | ✓ | | |
 | `/api/v1/alert-rules/**` | ✓ | | |
 | `/api/v1/correlators/**` | ✓ | | |
 | `/api/v1/models/**` (write) | ✓ | | |
