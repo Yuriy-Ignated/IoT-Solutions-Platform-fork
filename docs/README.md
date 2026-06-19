@@ -21,6 +21,9 @@
 | [Безопасность](SECURITY.md) | RBAC, Keycloak, профили |
 | [Развёртывание](DEPLOYMENT.md) | Docker, переменные окружения, профили Spring |
 | [Тестирование](TESTING.md) | Unit, integration, smoke |
+| [Лицензия](LICENSE.md) | MIT ядро; коммерческие плагины отдельно |
+| [Плагины и границы](PLUGINS.md) | Что не входит в `main` |
+| [Third-party](THIRD_PARTY_NOTICES.md) | Лицензии зависимостей (bpmn-js, Spring, …) |
 
 ## Быстрые ссылки
 
@@ -61,3 +64,10 @@ docker-compose.yml        # PostgreSQL, Redis, NATS, MQTT, Keycloak
 ```
 
 Эталонный стенд нефтебазы (P-301) вынесен в отдельную ветку `feature/oil-terminal-reference` и не входит в `main`.
+
+## Лицензия и границы
+
+- **Ядро** (`main`): [MIT](LICENSE) — `packages/ispf-*`, web-console, docs
+- **Коммерческие плагины**: отдельные репозитории, явная лицензия в пакете — [docs/PLUGINS.md](docs/PLUGINS.md)
+- **Oil-terminal / P-301**: только ветка `feature/oil-terminal-reference`, **не** в `main`
+- Подробнее: [docs/LICENSE.md](docs/LICENSE.md), [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md)

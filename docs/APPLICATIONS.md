@@ -15,7 +15,7 @@
 | 07 | Model Registry Persistence | `model_definitions` + автосохранение при CRUD моделей |
 | 10 | Workflow Cancel | `POST /workflows/instances/{id}/cancel` |
 
-Пример bundle: [`examples/terminal-app/`](../examples/terminal-app/).
+Пример полного app bundle (oil-terminal) — ветка **`feature/oil-terminal-reference`**, не в `main`. См. [PLUGINS.md](PLUGINS.md).
 
 ## Регистрация приложения
 
@@ -182,13 +182,14 @@ Content-Type: application/json
 | `/applications/**`, `/schedules/**` | `admin` |
 | `/bff/invoke`, `/workflows/instances/*/cancel` | `operator`, `admin` |
 
-Пример bundle: [`examples/terminal-app/`](../examples/terminal-app/).
+Пример полного app bundle (oil-terminal) — ветка **`feature/oil-terminal-reference`**, не в `main`. См. [PLUGINS.md](PLUGINS.md).
 
 ## Связанная документация
 
 - [API.md](API.md) — таблица endpoints
 - [WORKFLOWS.md](WORKFLOWS.md) — BPMN `invoke_function`, отмена экземпляров
 - [WEB_CONSOLE.md](WEB_CONSOLE.md) — BPMN editor и auto-layout
+- [PLUGINS.md](PLUGINS.md) — границы ядра и коммерческих плагинов
 - [SECURITY.md](SECURITY.md) — матрица RBAC
 
 ## Следующие шаги (backlog)

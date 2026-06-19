@@ -83,7 +83,7 @@ Content-Type: application/json
 | GET | `/api/v1/schedules` | admin | Список расписаний |
 | POST | `/api/v1/schedules` | admin | Создать/обновить расписание |
 
-Пример bundle: [`examples/terminal-app/`](../examples/terminal-app/).
+Пример bundle — ветка `feature/oil-terminal-reference` ([PLUGINS.md](PLUGINS.md)).
 
 ## Work Queue
 
