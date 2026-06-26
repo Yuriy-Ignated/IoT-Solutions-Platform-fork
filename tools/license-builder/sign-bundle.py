@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sign ISPF bundle manifest license block (ADR-0010)."""
+"""Sign ISPF bundle manifest license block (0003)."""
 
 from __future__ import annotations
 
